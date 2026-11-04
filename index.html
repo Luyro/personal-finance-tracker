@@ -59,6 +59,25 @@ input,select,textarea{font-size:16px!important}
 }
 @media(max-width:360px){main{padding-left:calc(10px + env(safe-area-inset-left,0px));padding-right:calc(10px + env(safe-area-inset-right,0px))}.g4>.card .big{font-size:17px}}
 @media(max-width:680px) and (orientation:landscape){aside,aside.col{padding-top:4px}nav button{min-height:44px}main{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}}
+
+/* ===== Floating pill bottom bar (mobile) ===== */
+:root{--pill:#1b211f;--pill-ico:#aab6b0;--pill-on-bg:#f2f5f3;--pill-on-fg:#0b2a22}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--pill:#1f2f29;--pill-ico:#9fb8ae;--pill-on-bg:#eaf3ee;--pill-on-fg:#0a1511}}
+:root[data-theme=dark]{--pill:#1f2f29;--pill-ico:#9fb8ae;--pill-on-bg:#eaf3ee;--pill-on-fg:#0a1511}
+@media(max-width:680px){
+aside,aside.col{background:transparent!important;border:0!important;box-shadow:none!important;overflow:visible;pointer-events:none;padding:0 max(16px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+aside:before{content:'';position:absolute;left:0;right:0;bottom:0;height:calc(100% + 34px);z-index:-1;background:linear-gradient(to bottom,transparent,var(--bg) 62%);pointer-events:none}
+aside nav{pointer-events:auto;display:flex;gap:4px;justify-content:space-between;align-items:center;padding:8px;background:var(--pill);border-radius:999px;box-shadow:0 14px 34px rgba(8,24,18,.28);overflow:visible;max-width:420px;margin:0 auto}
+aside nav button{flex:0 0 auto;width:56px;min-width:56px;min-height:52px;height:52px;border-radius:999px;flex-direction:row;gap:8px;padding:0;color:var(--pill-ico);background:transparent;box-shadow:none;border:0;transition:flex .25s,background .2s,color .2s}
+aside nav button:hover{background:transparent;color:#fff}
+aside nav button .nav-ico{font-size:21px;width:auto}
+aside nav button:not(.on) .nav-label{display:none!important}
+aside nav button.on{flex:1 1 auto;width:auto;padding:0 18px;background:var(--pill-on-bg);color:var(--pill-on-fg);box-shadow:none}
+aside nav button.on .nav-label{display:block!important;max-width:none;font-size:14px;font-weight:650;letter-spacing:-.01em}
+main{padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))}
+#ts{bottom:calc(98px + env(safe-area-inset-bottom,0px))}
+}
+@media(max-width:680px) and (orientation:landscape){main{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}aside nav button{min-height:44px;height:44px}}
 </style></head><body>
 <aside id=sd></aside><main><header class=topbar><div class=heading><div class=eyebrow>ЛИЧНЫЙ ФИНАНСОВЫЙ КАБИНЕТ</div><h1 id=h>Главная</h1><p id=sub>Ваша финансовая картина — в одном месте.</p></div><div class=header-actions><div class=local-chip><i></i>Данные хранятся на этом устройстве</div><button id=hb class="bt pr" onclick="txf({})">＋ Добавить операцию</button></div></header><div id=c></div></main><div id=m></div><div id=ts role=status aria-live=polite></div>
 <script>
@@ -165,7 +184,7 @@ S.goals.filter(g=>!g.done).forEach(g=>t.push(`Для цели «${g.name}» ос
 // views
 function home(){const r=rng(),inc=sm('income',r),ex=sm('expense',r),cm=mr(0),tot=total(),cash=S.acc.filter(a=>a.type=='Наличные').reduce((x,a)=>x+bal(a.id),0),d=tot-total(mr(-1)[1]),top=byCat(r).slice(0,5),up=S.rec.filter(x=>x.active).sort((a,b)=>a.next<b.next?-1:1).slice(0,5);
 post=null;
-return pbar()+`<div class="g g4 hg"><div class="card hero"><div class=hl>Общий баланс</div><div class=hv>${fm(tot)}</div><div class=tiles><div class=tile><span>${I('cash')} Наличные</span><b>${fm(cash)}</b></div><div class=tile><span>${I('card')} Карты и счета</span><b>${fm(tot-cash)}</b></div></div></div>${st('Доходы',fm(inc),'pos',pl('income'))}${st('Расходы',fm(ex),'neg',pl('expense'))}${st('Разница',fm(inc-ex),inc>=ex?'pos':'neg')}${st('Сбережения',inc?Math.round((inc-ex)/inc*100)+'%':'—','',pl('transfer'))}${st('Баланс к прошлому месяцу',(d>=0?'+':'')+fm(d),d>=0?'pos':'neg')}</div>
+return pbar()+`<div class="g g4 hg"><div class="card hero"><div class=hl>Общий баланс</div><div class=hv>${fm(tot)}</div><div class=tiles><div class=tile><span>${I('cash')} Наличные</span><b>${fm(cash)}</b></div><div class=tile><span>${I('card')} Карты и счета</span><b>${fm(tot-cash)}</b></div></div></div>${st('Доходы',fm(inc),'pos',pl('income'))}${st('Расходы',fm(ex),'neg',pl('expense'))}${st('Разница',fm(inc-ex),inc>=ex?'pos':'neg')}${st('Сбережения',inc?Math.round((inc-ex)/inc*100)+'%':'—','',`<button class=bt style="padding:1px 9px" title="Добавить сбережения" aria-label="Добавить сбережения" onclick="sv()">+</button>`)}${st('Баланс к прошлому месяцу',(d>=0?'+':'')+fm(d),d>=0?'pos':'neg')}</div>
 <div class="g g2">${mring()}<div class=card><b>${I('bulb')} Подсказки</b>${tips().map(x=>`<div class=tip>${esc(x)}</div>`).join('')}</div></div>
 <div class="g g2"><div class=card><div class=row style="justify-content:space-between;margin-bottom:6px"><b>Последние операции</b><button class=bt onclick="view='fin';fsub='tx';render()">Все</button></div>${S.tx.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,8).map(row).join('')||'<p class=m>Пока нет операций</p>'}</div>
 <div class=card><b>Топ-5 категорий расходов</b>${top.map(([c,v])=>`<div class=rw><span class=ic style="--c:${cat(c).color}">${ico(cat(c).icon)}</span><div class=fx>${esc(cat(c).name)}</div><b>${fm(v)}</b></div>`).join('')||'<p class=m>Нет данных</p>'}
@@ -184,6 +203,7 @@ t.push('Откладывайте деньги сразу после получе
 function kc(){const s=parseFloat($('#k1').value),m=parseInt($('#k2').value);$('#kr').textContent=s>0&&m>0?'Откладывать '+fm(Math.ceil(s*100/m))+' в месяц':''}
 const gx=id=>{const g=S.goals.find(x=>x.id==id);g.done=!g.done;save();render()};
 function ge(id){const g=S.goals.find(x=>x.id==id)||{};form(id?'Цель':'Новая цель',()=>[{k:'icon',l:'Иконка',t:'select',o:IC.map(x=>[x,x])},{k:'name',l:'Название'},{k:'target',l:'Необходимая сумма',t:'number'},{k:'saved',l:'Уже накоплено',t:'number'},{k:'date',l:'Желаемая дата',t:'date'},{k:'desc',l:'Описание',t:'textarea'}],v=>{const t=mn(v.target),s=v.saved===''?0:mn(v.saved);if(!v.name.trim())return'Укажите название';if(!(t>0))return'Укажите сумму цели';if(!(s>=0))return'Накопленная сумма не может быть отрицательной';const o={id:g.id||uid(),name:v.name.trim(),icon:v.icon,target:t,saved:s,date:v.date,desc:v.desc,done:!!g.done};g.id?Object.assign(g,o):S.goals.push(o)},{icon:'🎯',...g,target:g.target!=null?g.target/100:'',saved:g.saved!=null?g.saved/100:0})}
+function sv(){const gl=S.goals.filter(g=>!g.done);if(!gl.length){ge();return}form('Добавить сбережения',()=>[{k:'g',l:'Цель накопления',t:'select',o:gl.map(g=>[g.id,g.name])},{k:'a',l:'Сумма',t:'number'}],v=>{const a=mn(v.a),g=S.goals.find(x=>x.id==v.g);if(!g)return'Выберите цель';if(!(a>0))return'Введите сумму больше нуля';g.saved+=a},{g:gl[0].id})}
 function gd(id,sg){const g=S.goals.find(x=>x.id==id);form(sg>0?'Внести в цель':'Снять с цели',()=>[{k:'a',l:'Сумма',t:'number'}],v=>{const a=mn(v.a);if(!(a>0))return'Введите сумму больше нуля';if(sg<0&&a>g.saved)return'Нельзя снять больше накопленного';g.saved+=sg*a})}
 const addF=(s,f,anchorDay,anchorMonth)=>{const d=new Date(s+'T00:00:00');if(f=='daily')d.setDate(d.getDate()+1);else if(f=='weekly')d.setDate(d.getDate()+7);else if(f=='monthly'){const y=d.getFullYear(),m=d.getMonth()+1,day=anchorDay||d.getDate(),last=new Date(y,m+1,0).getDate();return iso(new Date(y,m,Math.min(day,last)))}else{const y=d.getFullYear()+1,m=Number.isInteger(anchorMonth)?anchorMonth:d.getMonth(),day=anchorDay||d.getDate(),last=new Date(y,m+1,0).getDate();return iso(new Date(y,m,Math.min(day,last)))}return iso(d)};
 function proc(){let n=0;S.rec.filter(r=>r.active).forEach(r=>{r.anchorDay=r.anchorDay||Number(r.next.slice(8,10));r.anchorMonth=Number.isInteger(r.anchorMonth)?r.anchorMonth:Number(r.next.slice(5,7))-1;let g=0;while(r.next<=today()&&g++<800){const id='r'+r.id+r.next;if(!S.tx.some(t=>t.id==id)){S.tx.push({id,type:r.type||'expense',title:r.name,amount:r.amount,cat:r.cat,acc:r.acc,date:r.next,note:'Регулярная операция'});n++}r.next=addF(r.next,r.freq,r.anchorDay,r.anchorMonth)}});if(n){save();toast('Проведено регулярных платежей: '+n)}}
