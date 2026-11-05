@@ -104,6 +104,36 @@ main{padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))}
 .an-ins{display:grid;gap:12px;margin-top:14px}.an-ins>div{display:flex;gap:12px;align-items:flex-start}.an-ins p{margin:3px 0 0;font-size:13px;line-height:1.5}
 .an-ii{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;flex:none;font-size:14px;background:color-mix(in srgb,var(--primary) 12%,transparent);color:var(--primary)}.an-ii.pos{background:color-mix(in srgb,var(--green) 15%,transparent);color:var(--green)}.an-ii.neg{background:color-mix(in srgb,var(--red) 14%,transparent);color:var(--red)}
 @media(max-width:680px){.an-hero{padding:17px}.an-dw{gap:14px}.an-lg{min-width:100%}}
+/* ===== Analytics bars (ref: statistics histogram) ===== */
+.an-bars{margin-bottom:12px;border:0;color:#fff;background:linear-gradient(160deg,#1a8a68 0%,#0b2a22 100%);box-shadow:0 14px 34px rgba(11,42,34,.25);overflow:hidden}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .an-bars{background:linear-gradient(160deg,#145a46 0%,#07110e 100%)}}
+:root[data-theme=dark] .an-bars{background:linear-gradient(160deg,#145a46 0%,#07110e 100%)}
+.an-bh{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.an-bh b{font-size:15px}
+.an-rg{display:flex;gap:2px;background:#ffffff1a;border-radius:999px;padding:3px}
+.an-rg button{border:0;background:transparent;color:#ffffffa6;font:inherit;font-size:12px;font-weight:650;padding:6px 12px;border-radius:999px;cursor:pointer}.an-rg button.on{background:#ffffff;color:#0b2a22}
+.an-bc{display:flex;gap:10px;align-items:flex-end;margin-top:6px}.an-bc.dense{gap:5px}
+.an-col{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.an-bt{width:100%;height:196px;padding-top:40px;display:flex;align-items:flex-end;justify-content:center}
+.an-b2{position:relative;width:100%;max-width:46px;border-radius:14px;background:#ffffff2b;transition:background .2s,height .4s}
+.an-col.on .an-b2{background:#f2fff9}
+.an-col>span{font-size:11px;color:#ffffff9e;text-transform:capitalize}.an-bc.dense .an-col>span{font-size:9.5px}.an-col.on>span{color:#fff;font-weight:700}
+.an-btip{display:none;position:absolute;left:50%;bottom:calc(100% + 9px);transform:translateX(-50%);font-style:normal;background:#3fcf9d;color:#04231a;font-size:11.5px;font-weight:750;padding:5px 10px;border-radius:10px;white-space:nowrap;box-shadow:0 6px 16px #0004;z-index:2}
+.an-btip:after{content:'';position:absolute;left:50%;top:100%;margin-left:-5px;border:5px solid transparent;border-top-color:#3fcf9d}
+.an-col.on .an-btip{display:block}
+.an-col:first-child .an-btip{left:0;transform:none}.an-col:first-child .an-btip:after{left:18px}
+.an-col:last-child .an-btip{left:auto;right:0;transform:none}.an-col:last-child .an-btip:after{left:auto;right:18px;margin-left:0}
+/* ===== Pill buttons (ref: flow chips) ===== */
+:root{--chip:#e8efec;--chip-h:#dce8e3}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--chip:#1b2c26;--chip-h:#243a32}}
+:root[data-theme=dark]{--chip:#1b2c26;--chip-h:#243a32}
+.bt{border:0;border-radius:999px;padding:9px 18px;min-height:40px;font-size:13px;font-weight:550;letter-spacing:-.01em;box-shadow:none}
+.bt:not(.pr):not(.dn):not(.gear){background:var(--chip);color:var(--text)}
+.bt:not(.pr):not(.dn):not(.gear):hover{background:var(--chip-h);border:0;transform:none}
+.bt.pr{border:0;box-shadow:0 8px 18px color-mix(in srgb,var(--primary) 26%,transparent)}.bt.dn{border:0}
+.card .row .bt{min-height:34px;padding:6px 15px}.card .rw .bt{min-height:32px;padding:5px 13px}
+.stat .row .bt{width:38px;min-width:38px;height:38px;min-height:38px;padding:0;font-size:19px;font-weight:500;line-height:1}
+.header-actions .gear:not(.pr){background:var(--chip)}
+@media(max-width:680px){.bt{font-size:12.5px;padding:8px 15px}.header-actions .bt{min-height:40px;padding:8px 16px;font-size:12.5px}.card .rw .bt{padding:5px 11px}}
 </style></head><body>
 <aside id=sd></aside><main><header class=topbar><div class=heading><div class=eyebrow>ЛИЧНЫЙ ФИНАНСОВЫЙ КАБИНЕТ</div><h1 id=h>Главная</h1><p id=sub>Ваша финансовая картина — в одном месте.</p></div><div class=header-actions><div class=local-chip><i></i>Данные хранятся на этом устройстве</div><button id=hb class="bt pr" onclick="txf({})">＋ Добавить операцию</button></div></header><div id=c></div></main><div id=m></div><div id=ts role=status aria-live=polite></div>
 <script>
@@ -122,7 +152,7 @@ const cat=id=>S.cats.find(c=>c.id==id)||{name:'—',icon:'❔',color:'#888'},acc
 const opt=(o,v)=>o.map(([a,b])=>`<option value="${a}"${a==v?' selected':''}>${esc(b)}</option>`).join('');
 const bal=(a,u=today())=>S.tx.reduce((s,t)=>t.date>u?s:s+(t.type=='income'&&t.acc==a?t.amount:t.type=='expense'&&t.acc==a?-t.amount:t.type=='transfer'?(t.acc==a?-t.amount:0)+(t.to==a?t.amount:0):0),acc(a).init);
 const total=(u=today())=>S.acc.reduce((s,a)=>s+bal(a.id,u),0);
-function rng(){const n=new Date(),y=n.getFullYear(),m=n.getMonth();if(per=='week'){const s=new Date(n);s.setDate(n.getDate()-6);return[iso(s),iso(n)]}if(per=='year')return[y+'-01-01',y+'-12-31'];if(per=='custom'&&from&&to&&from<=to)return[from,to];return mr(0)}
+function rng(){const n=new Date(),y=n.getFullYear(),m=n.getMonth();if(per=='week')return wr();if(per=='year')return[y+'-01-01',y+'-12-31'];if(per=='custom'&&from&&to&&from<=to)return[from,to];return mr(0)}
 const mr=o=>{const n=new Date(),y=n.getFullYear(),m=n.getMonth()+o;return[iso(new Date(y,m,1)),iso(new Date(y,m+1,0))]};
 const ms=n=>Array.from({length:n},(_,i)=>{const r=mr(i-n+1);return{r,l:new Date(r[0]+'T00:00').toLocaleDateString('ru',{month:'short'})}});
 const sm=(ty,r,c)=>S.tx.filter(t=>t.type==ty&&t.date>=r[0]&&t.date<=r[1]&&(!c||t.cat==c)).reduce((s,t)=>s+t.amount,0);
@@ -208,10 +238,10 @@ Object.entries(S.accLim).forEach(([a,L])=>{const p=Math.round(S.tx.filter(t=>t.t
 if(sm('income',pm)||sm('expense',pm)){const si=sm('income',cm)-sm('expense',cm),sp=sm('income',pm)-sm('expense',pm);t.push(si>=sp?'В этом месяце вы сохранили не меньше средств, чем в прошлом.':'В прошлом месяце вы сохранили больше средств.')}
 S.goals.filter(g=>!g.done).forEach(g=>t.push(`Для цели «${g.name}» осталось накопить ${fm(Math.max(0,g.target-g.saved))}.`));return t.length?t.slice(0,7):['Добавьте операции — здесь появятся подсказки на основе ваших данных.']}
 // views
-function home(){const r=rng(),inc=sm('income',r),ex=sm('expense',r),cm=mr(0),tot=total(),cash=S.acc.filter(a=>a.type=='Наличные').reduce((x,a)=>x+bal(a.id),0),d=tot-total(mr(-1)[1]),top=byCat(r).slice(0,5),up=S.rec.filter(x=>x.active).sort((a,b)=>a.next<b.next?-1:1).slice(0,5);
-post=null;
+function home(){const r=rng(),inc=sm('income',r),ex=sm('expense',r),cm=mr(0),tot=total(),cash=S.acc.filter(a=>a.type=='Наличные').reduce((x,a)=>x+bal(a.id),0),d=tot-total(mr(-1)[1]),top=byCat(r).slice(0,5),hero=anHero('expense'),up=S.rec.filter(x=>x.active).sort((a,b)=>a.next<b.next?-1:1).slice(0,5);
+post=anDraw;
 return pbar()+`<div class="g g4 hg"><div class="card hero"><div class=hl>Общий баланс</div><div class=hv>${fm(tot)}</div><div class=tiles><div class=tile><span>${I('cash')} Наличные</span><b>${fm(cash)}</b></div><div class=tile><span>${I('card')} Карты и счета</span><b>${fm(tot-cash)}</b></div></div></div>${st('Доходы',fm(inc),'pos',pl('income'))}${st('Расходы',fm(ex),'neg',pl('expense'))}${st('Разница',fm(inc-ex),inc>=ex?'pos':'neg')}${st('Сбережения',inc?Math.round((inc-ex)/inc*100)+'%':'—','',`<button class=bt style="padding:1px 9px" title="Добавить сбережения" aria-label="Добавить сбережения" onclick="sv()">+</button>`)}${st('Баланс к прошлому месяцу',(d>=0?'+':'')+fm(d),d>=0?'pos':'neg')}</div>
-<div class="g g2">${mring()}<div class=card><b>${I('bulb')} Подсказки</b>${tips().map(x=>`<div class=tip>${esc(x)}</div>`).join('')}</div></div>
+<div class="g g2">${mring()}${hero}</div>
 <div class="g g2"><div class=card><div class=row style="justify-content:space-between;margin-bottom:6px"><b>Последние операции</b><button class=bt onclick="view='fin';fsub='tx';render()">Все</button></div>${S.tx.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,8).map(row).join('')||'<p class=m>Пока нет операций</p>'}</div>
 <div class=card><b>Топ-5 категорий расходов</b>${top.map(([c,v])=>`<div class=rw><span class=ic style="--c:${cat(c).color}">${ico(cat(c).icon)}</span><div class=fx>${esc(cat(c).name)}</div><b>${fm(v)}</b></div>`).join('')||'<p class=m>Нет данных</p>'}
 <p class=row style="justify-content:space-between"><b>Лимиты</b><button class=bt onclick="bf()">+ Лимит</button></p>${limBlock()||'<p class=m>Лимиты не заданы</p>'}
@@ -238,10 +268,10 @@ return`<div class=row style="margin-bottom:12px"><button class="bt pr" onclick="
 <div class=card><b>Ближайшие операции (30 дней)</b>${l.slice(0,20).map(([d,r])=>`<div class=rw><div class=fx>${esc(r.name)}<small>${fd(d)}</small></div><b class="${r.type=='income'?'pos':''}">${r.type=='income'?'+':''}${fm(r.amount)}</b></div>`).join('')||'<p class=m>Нет операций</p>'}</div></div>`}
 const rt=id=>{const r=S.rec.find(x=>x.id==id);r.active=!r.active;save();render()};
 function rcf(id){const r=S.rec.find(x=>x.id==id)||{};form(id?'Операция':'Новая частая операция',v=>[{k:'type',l:'Тип',t:'select',re:1,o:[['expense','Платёж (расход)'],['income','Доход']]},{k:'name',l:'Название'},{k:'amount',l:'Сумма',t:'number'},{k:'cat',l:'Категория',t:'select',o:S.cats.filter(c=>c.type==v.type).map(c=>[c.id,c.icon+' '+c.name])},{k:'acc',l:'Счёт',t:'select',o:aco()},{k:'freq',l:'Периодичность',t:'select',o:Object.entries(FQ)},{k:'next',l:'Дата следующей операции',t:'date'}],v=>{const a=mn(v.amount);if(!v.name.trim())return'Укажите название';if(!(a>0))return'Введите сумму больше нуля';if(!v.next)return'Укажите дату';if(!v.cat)return'Выберите категорию';const o={id:r.id||uid(),type:v.type,name:v.name.trim(),amount:a,cat:v.cat,acc:v.acc,freq:v.freq,next:v.next,active:r.id?r.active:true};r.id?Object.assign(r,o):S.rec.push(o);proc()},{freq:'monthly',next:today(),...r,type:r.type||'expense',amount:r.amount!=null?r.amount/100:''})}
-/* ===== Analytics v2 ===== */
-let anT='expense',AN=null;
+/* ===== Analytics v3 ===== */
+let anT='expense',anR=6,AN=null;
 const anCmp=(c,p)=>p?Math.round((c/p-1)*100):null,
-anCol={expense:'var(--red)',income:'var(--green)',saving:'var(--primary)'};
+anDark=()=>{const t=document.documentElement.dataset.theme;return t=='dark'||(t!='light'&&matchMedia('(prefers-color-scheme:dark)').matches)};
 function anDays(a,b){return Math.round((new Date(b+'T00:00')-new Date(a+'T00:00'))/864e5)+1}
 function anPrev(r){const len=anDays(r[0],r[1]),t=today(),el=Math.min(len,Math.max(1,anDays(r[0],r[1]<t?r[1]:t)));let s,e;
 if(per=='month')[s,e]=mr(-1);else if(per=='year'){const y=+r[0].slice(0,4)-1;s=y+'-01-01';e=y+'-12-31'}else{const d=new Date(r[0]+'T00:00');d.setDate(d.getDate()-len);s=iso(d);d.setDate(d.getDate()+len-1);e=iso(d)}
@@ -251,30 +281,35 @@ function anSeries(r){const end=r[1]<today()?r[1]:today(),mo=per=='year'||anDays(
 S.tx.forEach(t=>{if(t.date<r[0]||t.date>end)return;const k=mo?t.date.slice(0,7):t.date,o=agg[k]=agg[k]||{i:0,e:0};if(t.type=='income')o.i+=t.amount;else if(t.type=='expense')o.e+=t.amount});
 const f=o=>!o?0:anT=='income'?o.i:anT=='expense'?o.e:o.i-o.e,pts=[];
 if(mo){for(let d=new Date(r[0].slice(0,7)+'-01T00:00');iso(d)<=end;d.setMonth(d.getMonth()+1)){const k=iso(d).slice(0,7);pts.push({v:f(agg[k]),l:d.toLocaleDateString('ru',{month:'short'}),full:d.toLocaleDateString('ru',{month:'long',year:'numeric'})})}}
-else{for(let d=new Date(r[0]+'T00:00');iso(d)<=end;d.setDate(d.getDate()+1)){const k=iso(d);pts.push({v:f(agg[k]),l:k.slice(8)+'.'+k.slice(5,7),full:fd(k)})}}
+else{const last=per=='week'?r[1]:end;for(let d=new Date(r[0]+'T00:00');iso(d)<=last;d.setDate(d.getDate()+1)){const k=iso(d);pts.push({v:k>end?null:f(agg[k]),l:per=='week'?d.toLocaleDateString('ru',{weekday:'short'}):k.slice(8)+'.'+k.slice(5,7),full:fd(k)})}}
 return pts}
 function anCats(r){const o={};S.tx.filter(t=>t.type==anT&&t.date>=r[0]&&t.date<=r[1]).forEach(t=>o[t.cat]=(o[t.cat]||0)+t.amount);return Object.entries(o).sort((a,b)=>b[1]-a[1])}
 const anK=v=>{const a=Math.abs(v);return(v<0?'−':'')+(a>=1e6?+(a/1e6).toFixed(1)+'M':a>=1e3?+(a/1e3).toFixed(1)+'k':Math.round(a))};
-function anDraw(){const w=document.getElementById('antr');if(!w||!AN)return;const pts=AN.pts;
-if(!pts.length||pts.every(p=>!p.v)){w.innerHTML='<div class=an-empty>Нет данных за выбранный период</div>';return}
-const W=Math.max(200,w.clientWidth),H=w.clientHeight||190,pl=34,pr=10,pt=14,pb=26,vs=pts.map(p=>p.v/100),mx=Math.max(0,...vs),mnv=Math.min(0,...vs),sp=(mx-mnv)||1,top=mx+sp*.14,bot=mnv<0?mnv-sp*.1:0,n=pts.length,
+function anDraw(){const w=document.getElementById('antr');if(!w||!AN)return;const pts=AN.pts,n=pts.length,m0=pts.findIndex(p=>p.v==null),m=m0<0?n:m0;
+if(!m||pts.every(p=>!p.v)){w.innerHTML='<div class=an-empty>Нет данных за выбранный период</div>';return}
+const W=Math.max(200,w.clientWidth),H=w.clientHeight||190,pl=34,pr=12,pt=14,pb=26,vs=pts.slice(0,m).map(p=>p.v/100),mx=Math.max(0,...vs),mnv=Math.min(0,...vs),sp=(mx-mnv)||1,top=mx+sp*.14,bot=mnv<0?mnv-sp*.1:0,
 X=i=>n==1?(pl+W-pr)/2:pl+i*(W-pl-pr)/(n-1),Y=v=>pt+(1-(v-bot)/(top-bot))*(H-pt-pb),P=vs.map((v,i)=>[X(i),Y(v)]),clampY=y=>Math.min(H-pb,Math.max(pt,y));
-let d=`M${P[0][0]},${P[0][1]}`;for(let i=0;i<n-1;i++){const p0=P[i-1]||P[i],p1=P[i],p2=P[i+1],p3=P[i+2]||p2;d+=`C${p1[0]+(p2[0]-p0[0])/6},${clampY(p1[1]+(p2[1]-p0[1])/6)} ${p2[0]-(p3[0]-p1[0])/6},${clampY(p2[1]-(p3[1]-p1[1])/6)} ${p2[0]},${p2[1]}`}
-const base=Y(Math.max(bot,Math.min(0,top))),area=n>1?`${d}L${P[n-1][0]},${base}L${P[0][0]},${base}Z`:'',
+let d=`M${P[0][0]},${P[0][1]}`;for(let i=0;i<m-1;i++){const p0=P[i-1]||P[i],p1=P[i],p2=P[i+1],p3=P[i+2]||p2;d+=`C${p1[0]+(p2[0]-p0[0])/6},${clampY(p1[1]+(p2[1]-p0[1])/6)} ${p2[0]-(p3[0]-p1[0])/6},${clampY(p2[1]-(p3[1]-p1[1])/6)} ${p2[0]},${p2[1]}`}
+const base=Y(Math.max(bot,Math.min(0,top))),area=m>1?`${d}L${P[m-1][0]},${base}L${P[0][0]},${base}Z`:'',
 grid=[0,1,2,3].map(k=>{const v=bot+k*(top-bot)/3,y=Y(v);return`<line x1=${pl} x2=${W-pr} y1=${y} y2=${y} class=an-gl /><text x=${pl-6} y=${y+4} text-anchor=end class=an-ax>${anK(v)}</text>`}).join(''),
-tk=Math.min(n,5),idx=[...new Set(Array.from({length:tk},(_,k)=>Math.round(k*(n-1)/Math.max(1,tk-1))))],
-xl=idx.map(i=>`<text x=${X(i)} y=${H-6} text-anchor=${i==0&&n>1?'start':i==n-1&&n>1?'end':'middle'} class=an-ax>${pts[i].l}</text>`).join('');
-w.innerHTML=`<svg width=${W} height=${H} viewBox="0 0 ${W} ${H}"><defs><linearGradient id=ang x1=0 y1=0 x2=0 y2=1><stop offset=0 stop-color="${AN.c}" stop-opacity=.28 /><stop offset=1 stop-color="${AN.c}" stop-opacity=0 /></linearGradient></defs>${grid}${xl}${area?`<path d="${area}" fill="url(#ang)"/>`:''}<path d="${d}" fill=none stroke="${AN.c}" stroke-width=2.6 stroke-linecap=round stroke-linejoin=round /><line id=anv x1=0 x2=0 y1=${pt} y2=${H-pb} class=an-vl /><circle id=anc r=5.5 class=an-dot style="stroke:${AN.c}" /></svg><div id=ant class=an-tip></div>`;
+tk=n<=7?n:5,idx=[...new Set(Array.from({length:tk},(_,k)=>Math.round(k*(n-1)/Math.max(1,tk-1))))],
+xl=idx.map(i=>`<text x=${X(i)} y=${H-6} text-anchor=${n<=7?'middle':i==0?'start':i==n-1?'end':'middle'} class=an-ax>${pts[i].l}</text>`).join('');
+w.innerHTML=`<svg width=${W} height=${H} viewBox="0 0 ${W} ${H}"><defs><linearGradient id=ang x1=0 y1=0 x2=0 y2=1><stop offset=0 stop-color="${AN.c}" stop-opacity=.28 /><stop offset=1 stop-color="${AN.c}" stop-opacity=0 /></linearGradient></defs>${grid}${xl}${area?`<path d="${area}" fill="url(#ang)"/>`:''}${m>1?`<path d="${d}" fill=none stroke="${AN.c}" stroke-width=2.6 stroke-linecap=round stroke-linejoin=round />`:''}<line id=anv x1=0 x2=0 y1=${pt} y2=${H-pb} class=an-vl /><circle id=anc r=5.5 class=an-dot style="stroke:${AN.c}" /></svg><div id=ant class=an-tip></div>`;
 const vl=w.querySelector('#anv'),dt=w.querySelector('#anc'),tp=w.querySelector('#ant');
-const sel=i=>{i=Math.max(0,Math.min(n-1,i));const x=P[i][0],y=P[i][1];vl.setAttribute('x1',x);vl.setAttribute('x2',x);dt.setAttribute('cx',x);dt.setAttribute('cy',y);tp.innerHTML=`<b>${fm(pts[i].v)}</b><span>${pts[i].full}</span>`;const hw=tp.offsetWidth/2;tp.style.left=Math.min(W-hw-2,Math.max(hw+2,x))+'px';tp.style.top=Math.max(2,y-12)+'px'};
+const sel=i=>{i=Math.max(0,Math.min(m-1,i));const x=P[i][0],y=P[i][1];vl.setAttribute('x1',x);vl.setAttribute('x2',x);dt.setAttribute('cx',x);dt.setAttribute('cy',y);tp.innerHTML=`<b>${fm(pts[i].v)}</b><span>${pts[i].full}</span>`;const hw=tp.offsetWidth/2;tp.style.left=Math.min(W-hw-2,Math.max(hw+2,x))+'px';tp.style.top=Math.max(2,y-12)+'px'};
 const mv=e=>{const rc=w.getBoundingClientRect();sel(n==1?0:Math.round((e.clientX-rc.left-pl)/(W-pl-pr)*(n-1)))};
-w.onpointermove=mv;w.onpointerdown=mv;let li=n-1;for(let i=n-1;i>=0;i--)if(pts[i].v){li=i;break}sel(li)}
+w.onpointermove=mv;w.onpointerdown=mv;let li=m-1;for(let i=m-1;i>=0;i--)if(pts[i].v){li=i;break}sel(li)}
 let anRt;addEventListener('resize',()=>{clearTimeout(anRt);anRt=setTimeout(anDraw,120)});
 function anDonut(it,tot){const R=54,C=2*Math.PI*R;let o=0;return`<svg viewBox="0 0 150 150" class=an-donut aria-hidden=true><circle cx=75 cy=75 r=${R} fill=none stroke="var(--surface-2)" stroke-width=18 />${it.map(x=>{const l=tot?Math.max(0,x.v)/tot*C:0,s=`<circle cx=75 cy=75 r=${R} fill=none stroke="${x.c}" stroke-width=18 stroke-dasharray="${Math.max(0,l-(it.length>1?2.5:0))} ${C}" stroke-dashoffset=${-o} transform="rotate(-90 75 75)" />`;o+=l;return s}).join('')}</svg>`}
-function anv(){const r=rng(),pr=anPrev(r),cur=anSum(r),prv=anSum(pr),end=r[1]<today()?r[1]:today(),days=Math.max(1,anDays(r[0],end)),dl=anCmp(cur,prv),inc=sm('income',r),ex=sm('expense',r),
-TT={expense:['Всего расходов','расходы'],income:['Всего доходов','доходы'],saving:['Сохранено за период','сбережения']}[anT],
-goodUp=anT!='expense',pts=anSeries(r);AN={pts,c:anCol[anT]=='var(--red)'?'#0f6b52':anCol[anT]=='var(--green)'?'#1aa06e':'#0f6b52'};
-if(matchMedia('(prefers-color-scheme:dark)').matches&&document.documentElement.dataset.theme!='light'||document.documentElement.dataset.theme=='dark')AN.c=anT=='income'?'#4fd6a4':'#3fcf9d';
+const anTT=t=>({expense:['Всего расходов','расходы'],income:['Всего доходов','доходы'],saving:['Сохранено за период','сбережения']}[t]);
+function anHero(ty){const o=anT;anT=ty;try{const r=rng(),pr=anPrev(r),cur=anSum(r),prv=anSum(pr),end=r[1]<today()?r[1]:today(),days=Math.max(1,anDays(r[0],end)),dl=anCmp(cur,prv),goodUp=ty!='expense';
+AN={pts:anSeries(r),c:anDark()?(ty=='income'?'#4fd6a4':'#3fcf9d'):(ty=='income'?'#1aa06e':'#0f6b52')};
+return`<div class="card an-hero"><div class=an-top><div><div class=m>${anTT(ty)[0]}</div><div class=an-big>${fm(cur)}</div></div>${dl!==null?`<span class="an-badge ${(dl>0)==goodUp?'pos':'neg'}">${dl>0?'↑':dl<0?'↓':''} ${dl>0?'+':''}${dl}%</span>`:''}</div><div class="m an-per">${fd(r[0])} — ${fd(r[1])}${dl!==null?' · к прошлому периоду':''}</div><div id=antr class=an-tr></div>
+<div class=an-rows><div><span>В прошлом периоде</span><b>${fm(prv)}</b></div><div><span>В среднем за день</span><b>${fm(Math.round(cur/days))}</b></div></div></div>`}finally{anT=o}}
+function anBars(){const N=anR,mm=ms(N),vals=mm.map(x=>sm('expense',x.r)),mx=Math.max(1,...vals);
+return`<div class="card an-bars"><div class=an-bh><b>Динамика расходов</b><div class=an-rg>${[[3,'3М'],[6,'6М'],[12,'1Г']].map(([k,l])=>`<button class="${anR==k?'on':''}" onclick="anR=${k};render()">${l}</button>`).join('')}</div></div><div class="an-bc${N>6?' dense':''}">${mm.map((x,i)=>`<div class="an-col${i==N-1?' on':''}" onclick="anBarSel(this)"><div class=an-bt><div class=an-b2 style="height:${Math.max(5,Math.round(vals[i]/mx*100))}%"><em class=an-btip>${fm(vals[i])}</em></div></div><span>${x.l}</span></div>`).join('')}</div></div>`}
+function anBarSel(e){e.parentNode.querySelectorAll('.an-col').forEach(x=>x.classList.toggle('on',x==e))}
+function anv(){const r=rng(),inc=sm('income',r),ex=sm('expense',r),end=r[1]<today()?r[1]:today(),days=Math.max(1,anDays(r[0],end)),cur=anSum(r),dl=anCmp(cur,anSum(anPrev(r))),TT=anTT(anT),goodUp=anT!='expense';
 let cats=[],list='',donut='';
 if(anT!='saving'){cats=anCats(r);const tot=cats.reduce((s,[,v])=>s+v,0),top=cats.slice(0,5),rest=cats.slice(5).reduce((s,[,v])=>s+v,0),it=top.map(([c,v])=>({n:cat(c).name,v,c:cat(c).color}));if(rest>0)it.push({n:'Прочее',v:rest,c:'#94a3b8'});
 donut=cats.length?`<div class=an-dw><div class=an-dc>${anDonut(it,tot)}<div class=an-dt><small>Всего</small><b>${fm(tot)}</b></div></div><div class=an-lg>${it.map(x=>`<div><i style="background:${x.c}"></i><span>${esc(x.n)}</span><b>${Math.round(x.v/tot*100)}%</b></div>`).join('')}</div></div>`:'<p class=m>Нет операций за период</p>';
@@ -288,14 +323,11 @@ if(anT=='expense'){ins.push(['◔','',`В среднем ${fm(Math.round(ex/days
 if(anT=='income'){ins.push(['◔','',`В среднем ${fm(Math.round(inc/days))} в день.`]);const big=S.tx.filter(t=>t.type=='income'&&t.date>=r[0]&&t.date<=r[1]).sort((a,b)=>b.amount-a.amount)[0];if(big)ins.push(['⬆','',`Самое крупное поступление — «${esc(big.title)}»: ${fm(big.amount)}.`])}
 if(anT=='saving'){ins.push(['◔','',inc?`Вы откладываете ${Math.round((inc-ex)/inc*100)}% от доходов.`:'Нет доходов за период — процент сбережений не посчитать.']);const g=S.goals.find(x=>!x.done);if(g)ins.push(['🎯','',`До цели «${esc(g.name)}» осталось ${fm(Math.max(0,g.target-g.saved))}.`])}
 const cm=Object.fromEntries(byCat(mr(0))),pm=Object.fromEntries(byCat(mr(-1))),ids=[...new Set([...Object.keys(cm),...Object.keys(pm)])],m6=ms(6).map(x=>sm('expense',x.r));
-post=()=>{anDraw();const m=ms(12);ch('a2','bar',{labels:m.map(x=>x.l),datasets:[{label:'Расходы',data:m.map(x=>sm('expense',x.r)/100),backgroundColor:'#0f6b52'}]});line('a3')};
-return`<div class=an-seg role=tablist>${[['expense','Расходы'],['income','Доходы'],['saving','Сбережения']].map(([k,l])=>`<button role=tab aria-selected=${anT==k} class="${anT==k?'on':''}" onclick="anT='${k}';render()">${l}</button>`).join('')}</div>${pbar()}
-<div class="card an-hero"><div class=an-top><div><div class=m>${TT[0]}</div><div class=an-big>${fm(cur)}</div></div>${dl!==null?`<span class="an-badge ${(dl>0)==goodUp?'pos':'neg'}">${dl>0?'↑':dl<0?'↓':''} ${dl>0?'+':''}${dl}%</span>`:''}</div><div class="m an-per">${fd(r[0])} — ${fd(r[1])}${dl!==null?' · к прошлому периоду':''}</div><div id=antr class=an-tr></div>
-<div class=an-rows><div><span>В прошлом периоде</span><b>${fm(prv)}</b></div><div><span>В среднем за день</span><b>${fm(Math.round(cur/days))}</b></div></div></div>
+const hero=anHero(anT);post=anDraw;
+return`<div class=an-seg role=tablist>${[['expense','Расходы'],['income','Доходы'],['saving','Сбережения']].map(([k,l])=>`<button role=tab aria-selected=${anT==k} class="${anT==k?'on':''}" onclick="anT='${k}';render()">${l}</button>`).join('')}</div>${pbar()}${hero}${anT=='expense'?anBars():''}
 <div class="g g2"><div class=card><b>${anT=='saving'?'Доходы и сбережения':'Структура по категориям'}</b>${donut}</div><div class=card><b>${anT=='saving'?'Прогресс по целям':'Топ категорий'}</b><div class=an-cl>${list}</div></div></div>
 <div class=card style="margin-bottom:12px"><b>Выводы</b><div class=an-ins>${ins.map(([i,c,t])=>`<div><span class="an-ii ${c}">${i}</span><p>${t}</p></div>`).join('')||'<p class=m>Добавьте операции — здесь появятся выводы.</p>'}</div></div>
-<div class="g g2"><div class=card><b>Динамика расходов по месяцам</b>${cv('a2')}</div><div class=card><b>История баланса</b>${cv('a3')}</div>
-<div class=card><b>Этот месяц и прошлый</b><p class=m>Доходы: ${fm(sm('income',mr(0)))} / ${fm(sm('income',mr(-1)))}<br>Расходы: ${fm(sm('expense',mr(0)))} / ${fm(sm('expense',mr(-1)))}<br>Средний расход в месяц: ${fm(Math.round(m6.reduce((a,b)=>a+b,0)/6))}</p>${ids.sort((a,b)=>(cm[b]||0)-(cm[a]||0)).map(c=>{const a=cm[c]||0,b=pm[c]||0;return`<div class=rw><div class=fx>${ico(cat(c).icon)} ${esc(cat(c).name)}</div><span class=m>${fm(a)} / ${fm(b)}</span><b class="${a>b?'neg':'pos'}">${b?(a>=b?'+':'')+Math.round((a/b-1)*100)+'%':'new'}</b></div>`}).join('')||'<p class=m>Нет данных</p>'}</div></div>`}
+<div class=card><b>Этот месяц и прошлый</b><p class=m>Доходы: ${fm(sm('income',mr(0)))} / ${fm(sm('income',mr(-1)))}<br>Расходы: ${fm(sm('expense',mr(0)))} / ${fm(sm('expense',mr(-1)))}<br>Средний расход в месяц: ${fm(Math.round(m6.reduce((a,b)=>a+b,0)/6))}</p>${ids.sort((a,b)=>(cm[b]||0)-(cm[a]||0)).map(c=>{const a=cm[c]||0,b=pm[c]||0;return`<div class=rw><div class=fx>${ico(cat(c).icon)} ${esc(cat(c).name)}</div><span class=m>${fm(a)} / ${fm(b)}</span><b class="${a>b?'neg':'pos'}">${b?(a>=b?'+':'')+Math.round((a/b-1)*100)+'%':'new'}</b></div>`}).join('')||'<p class=m>Нет данных</p>'}</div>`}
 
 // settings, export/import
 function setv(){post=null;return`<div class="g g2"><div class=card><b>Общие</b><label>Валюта<select onchange="S.set.cur=this.value;save();render()">${opt(CUR.map(x=>[x,x]),S.set.cur)}</select></label><label>Формат даты<select onchange="S.set.df=this.value;save();render()">${opt([['dmy','ДД.ММ.ГГГГ'],['iso','ГГГГ-ММ-ДД']],S.set.df)}</select></label><label>Тема<select onchange="S.set.theme=this.value;save();render()">${opt([['auto','Как в системе'],['light','Светлая'],['dark','Тёмная']],S.set.theme)}</select></label></div>
