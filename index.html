@@ -167,6 +167,15 @@ nav.lock button{overflow:hidden;flex:none}
 nav.go button{transition:width .46s cubic-bezier(.34,1.22,.5,1),min-width .46s cubic-bezier(.34,1.22,.5,1),color .2s}
 }
 
+/* ===== Переходы между вкладками ===== */
+#c.pg-fwd>*,#c.pg-back>*{animation:pgin .46s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*45ms)}
+#c.pg-fwd>*{--pg-x:22px}#c.pg-back>*{--pg-x:-22px}
+#c.pg-sub>:not([data-seg]){animation:pgsub .34s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*30ms)}
+.heading.pg-h h1,.heading.pg-h p{animation:pgh .34s ease both}.heading.pg-h p{animation-delay:.05s}
+@keyframes pgin{from{opacity:0;transform:translateX(var(--pg-x,22px))}to{opacity:1;transform:none}}
+@keyframes pgsub{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes pgh{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
 /* ===== Animated balances ===== */
 [data-cnt]{font-variant-numeric:tabular-nums;transition:color .45s}
 .cnt-up{color:var(--green)!important}.cnt-dn{color:var(--red)!important}
@@ -447,9 +456,17 @@ if(ch&&_np&&_nw&&_nw.length==bs.length){
  const id=++_nt;setTimeout(()=>{if(id!==_nt||!nv.isConnected)return;nv.classList.remove('lock','go');bs.forEach(x=>{x.style.width=x.style.minWidth=''})},560)
 }else set(p);
 _np=p;_nw=fw}
+let _pv=null,_pf=null,_pt=0;
+function pgFx(){const c=$('#c'),hd=document.querySelector('.heading');c.classList.remove('pg-fwd','pg-back','pg-sub');hd&&hd.classList.remove('pg-h');
+const ch=_pv!==null&&_pv!==view,sb=!ch&&view=='fin'&&_pf!==null&&_pf!==fsub;
+const ix=k=>NAV.findIndex(n=>n[0]==k),dir=ch?(ix(view)>=ix(_pv)?'pg-fwd':'pg-back'):sb?'pg-sub':'';
+_pv=view;_pf=fsub;if(!dir)return;
+[...c.children].forEach((e,i)=>e.style.setProperty('--i',Math.min(i,7)));
+void c.offsetWidth;c.classList.add(dir);if(ch&&hd)hd.classList.add('pg-h');
+const id=++_pt;setTimeout(()=>{if(id!==_pt)return;c.classList.remove(dir);hd&&hd.classList.remove('pg-h')},950)}
 function render(){const r=document.documentElement;S.set.theme=='auto'?r.removeAttribute('data-theme'):r.dataset.theme=S.set.theme;try{const dk=S.set.theme=='dark'||(S.set.theme!='light'&&matchMedia('(prefers-color-scheme:dark)').matches);document.querySelectorAll('meta[name=theme-color]').forEach(m=>{m.removeAttribute('media');m.content=dk?'#0a1511':'#f2f5f3'})}catch(e){}$('#sd').className=S.set.col?'col':'';
 $('#sd').innerHTML=`<div class=brand><div class=brand-mark>₽</div><div class=brand-copy>Мои финансы<small>PERSONAL FINANCE</small></div><button class="bt brand-toggle" aria-label="Свернуть меню" onclick="S.set.col=!S.set.col;save();render()">${I('menu')}</button></div><nav>${NAV.map(([k,l,i])=>`<button class="${view==k?'on':''}" aria-label="${l}" onclick="view='${k}';render()"><span class=nav-ico>${I(i)}</span><span class=nav-label>${l}</span></button>`).join('')}</nav><div class=sidebar-foot>Личный финансовый трекер<br>Версия 1.4.1 · GitHub Pages</div>`;navAnim();
-const page=NAV.find(n=>n[0]==view);$('#h').textContent=page[1];const hb=$('#hb');if(view=='fin'){hb.className='bt gear'+(fsub=='set'?' pr':'');hb.innerHTML=I('gear');hb.title='Настройки';hb.setAttribute('aria-label','Настройки');hb.onclick=()=>{fsub='set';render()};hb.style.display=''}else{hb.className='bt pr';hb.innerHTML='＋ Добавить операцию';hb.title='';hb.onclick=()=>txf({});hb.style.display=(view=='home'||view=='goal')?'none':''}$('#sub').textContent=({home:greet(),fin:'Счета, операции, аналитика и настройки.',tx:'История операций, фильтры и быстрый поиск.',acc:'Все счета и движение средств между ними.',goal:'Отслеживайте прогресс и планируйте накопления.',rec:'Контролируйте регулярные списания и подписки.',an:'Изучайте динамику расходов и доходов.',set:'Настройте приложение и управляйте своими данными.'})[view];post=null;$('#c').innerHTML=V[view]();post&&post();cntFx();segFx()}
+const page=NAV.find(n=>n[0]==view);$('#h').textContent=page[1];const hb=$('#hb');if(view=='fin'){hb.className='bt gear'+(fsub=='set'?' pr':'');hb.innerHTML=I('gear');hb.title='Настройки';hb.setAttribute('aria-label','Настройки');hb.onclick=()=>{fsub='set';render()};hb.style.display=''}else{hb.className='bt pr';hb.innerHTML='＋ Добавить операцию';hb.title='';hb.onclick=()=>txf({});hb.style.display=(view=='home'||view=='goal')?'none':''}$('#sub').textContent=({home:greet(),fin:'Счета, операции, аналитика и настройки.',tx:'История операций, фильтры и быстрый поиск.',acc:'Все счета и движение средств между ними.',goal:'Отслеживайте прогресс и планируйте накопления.',rec:'Контролируйте регулярные списания и подписки.',an:'Изучайте динамику расходов и доходов.',set:'Настройте приложение и управляйте своими данными.'})[view];post=null;$('#c').innerHTML=V[view]();pgFx();post&&post();cntFx();segFx()}
 (async()=>{S=await load();if(!S||!Array.isArray(S.tx))S=D();S.set={...D().set,...S.set};S.bud=S.bud||{};S.lim=S.lim||{};S.accLim=S.accLim||{};proc();save();render()})();
 if('serviceWorker' in navigator){let rl_=0;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(rl_++)return;location.reload()})}if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=9',{updateViaCache:'none'}).catch(()=>{}));
 </script></body></html>
