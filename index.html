@@ -146,6 +146,21 @@ main{padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))}
 .as-r>i{width:10px;height:10px;border-radius:50%;flex:none}.as-r .fx{overflow:hidden}.as-r .fx small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.as-r .fx b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.as-v{white-space:nowrap;font-size:13px}
 .as-r .bt{width:32px;min-width:32px;height:32px;min-height:32px;padding:0;flex:none}
 @media(max-width:680px){.hero-btn{top:14px;right:14px;padding:8px 13px}.as-r{gap:8px;padding:10px}}
+
+/* ===== Bottom bar: sliding indicator ===== */
+.nav-ind{display:none}
+@media(max-width:680px){
+aside nav{position:relative}
+aside nav button{position:relative;z-index:1}
+aside nav button.on{background:transparent;box-shadow:none}
+.nav-ind{display:block;position:absolute;z-index:0;border-radius:999px;background:var(--pill-on-bg);box-shadow:0 6px 16px rgba(15,107,82,.4);pointer-events:none}
+.nav-ind.go{transition:left .46s cubic-bezier(.34,1.22,.5,1),width .46s cubic-bezier(.34,1.22,.5,1)}
+nav.anim button.on .nav-label{animation:navl .36s .1s cubic-bezier(.2,.8,.2,1) both}
+nav.anim button.on .nav-ico{animation:navi .5s cubic-bezier(.34,1.56,.64,1) both}
+nav.anim button:not(.on) .nav-ico{transition:color .25s}
+}
+@keyframes navl{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+@keyframes navi{from{transform:scale(.6) rotate(-8deg)}to{transform:none}}
 </style></head><body>
 <aside id=sd></aside><main><header class=topbar><div class=heading><div class=eyebrow>ЛИЧНЫЙ ФИНАНСОВЫЙ КАБИНЕТ</div><h1 id=h>Главная</h1><p id=sub>Ваша финансовая картина — в одном месте.</p></div><div class=header-actions><div class=local-chip><i></i>Данные хранятся на этом устройстве</div><button id=hb class="bt pr" onclick="txf({})">＋ Добавить операцию</button></div></header><div id=c></div></main><div id=m></div><div id=ts role=status aria-live=polite></div>
 <script>
@@ -379,8 +394,18 @@ function doim(){let o;try{o=JSON.parse($('#it').value)}catch(e){return $('#er').
 let fsub='an';const SUB=[['an','Аналитика'],['tx','Транзакции'],['rec','Частые операции']];
 function finv(){const h=V[fsub]();return`<div class=row style="justify-content:flex-start;margin-bottom:12px">${SUB.map(([k,l])=>`<button class="bt ${fsub==k?'pr':''}" onclick="fsub='${k}';render()">${l}</button>`).join('')}</div>`+h}
 const V={home,fin:finv,tx:txv,acc:accv,goal:goalv,rec:recv,an:anv,set:setv};
+let _np=null,_nv=null;
+function navAnim(){const nv=document.querySelector('#sd nav');if(!nv)return;
+if(!matchMedia('(max-width:680px)').matches){_np=null;_nv=view;return}
+const on=nv.querySelector('button.on');if(!on)return;
+const ch=_nv!==null&&_nv!==view;_nv=view;
+const nr=nv.getBoundingClientRect(),br=on.getBoundingClientRect(),p={l:br.left-nr.left-1,t:br.top-nr.top-1,w:br.width,h:br.height};
+const ind=document.createElement('span');ind.className='nav-ind';nv.prepend(ind);
+const set=o=>{ind.style.left=o.l+'px';ind.style.top=o.t+'px';ind.style.width=o.w+'px';ind.style.height=o.h+'px'};
+if(ch&&_np){set(_np);ind.getBoundingClientRect();ind.classList.add('go');nv.classList.add('anim');requestAnimationFrame(()=>set(p))}else set(p);
+_np=p}
 function render(){const r=document.documentElement;S.set.theme=='auto'?r.removeAttribute('data-theme'):r.dataset.theme=S.set.theme;try{const dk=S.set.theme=='dark'||(S.set.theme!='light'&&matchMedia('(prefers-color-scheme:dark)').matches);document.querySelectorAll('meta[name=theme-color]').forEach(m=>{m.removeAttribute('media');m.content=dk?'#0a1511':'#f2f5f3'})}catch(e){}$('#sd').className=S.set.col?'col':'';
-$('#sd').innerHTML=`<div class=brand><div class=brand-mark>₽</div><div class=brand-copy>Мои финансы<small>PERSONAL FINANCE</small></div><button class="bt brand-toggle" aria-label="Свернуть меню" onclick="S.set.col=!S.set.col;save();render()">${I('menu')}</button></div><nav>${NAV.map(([k,l,i])=>`<button class="${view==k?'on':''}" aria-label="${l}" onclick="view='${k}';render()"><span class=nav-ico>${I(i)}</span><span class=nav-label>${l}</span></button>`).join('')}</nav><div class=sidebar-foot>Личный финансовый трекер<br>Версия 1.4.1 · GitHub Pages</div>`;
+$('#sd').innerHTML=`<div class=brand><div class=brand-mark>₽</div><div class=brand-copy>Мои финансы<small>PERSONAL FINANCE</small></div><button class="bt brand-toggle" aria-label="Свернуть меню" onclick="S.set.col=!S.set.col;save();render()">${I('menu')}</button></div><nav>${NAV.map(([k,l,i])=>`<button class="${view==k?'on':''}" aria-label="${l}" onclick="view='${k}';render()"><span class=nav-ico>${I(i)}</span><span class=nav-label>${l}</span></button>`).join('')}</nav><div class=sidebar-foot>Личный финансовый трекер<br>Версия 1.4.1 · GitHub Pages</div>`;navAnim();
 const page=NAV.find(n=>n[0]==view);$('#h').textContent=page[1];const hb=$('#hb');if(view=='fin'){hb.className='bt gear'+(fsub=='set'?' pr':'');hb.innerHTML=I('gear');hb.title='Настройки';hb.setAttribute('aria-label','Настройки');hb.onclick=()=>{fsub='set';render()};hb.style.display=''}else{hb.className='bt pr';hb.innerHTML='＋ Добавить операцию';hb.title='';hb.onclick=()=>txf({});hb.style.display=(view=='home'||view=='goal')?'none':''}$('#sub').textContent=({home:greet(),fin:'Счета, операции, аналитика и настройки.',tx:'История операций, фильтры и быстрый поиск.',acc:'Все счета и движение средств между ними.',goal:'Отслеживайте прогресс и планируйте накопления.',rec:'Контролируйте регулярные списания и подписки.',an:'Изучайте динамику расходов и доходов.',set:'Настройте приложение и управляйте своими данными.'})[view];post=null;$('#c').innerHTML=V[view]();post&&post()}
 (async()=>{S=await load();if(!S||!Array.isArray(S.tx))S=D();S.set={...D().set,...S.set};S.bud=S.bud||{};S.lim=S.lim||{};S.accLim=S.accLim||{};proc();save();render()})();
 if('serviceWorker' in navigator){let rl_=0;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(rl_++)return;location.reload()})}if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=9',{updateViaCache:'none'}).catch(()=>{}));
