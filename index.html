@@ -295,6 +295,30 @@ html,body{overflow-x:clip}
 @keyframes mdSwapA{from{opacity:.0;transform:translateY(10px) scale(.985)}}
 @keyframes mdSwapB{from{opacity:.0;transform:translateY(10px) scale(.985)}}
 @media(prefers-reduced-motion:reduce){.mb,.md,.md[data-s]{animation:none!important}}
+
+/* ===== Custom dropdowns ===== */
+.cs{position:relative;display:block;min-width:0}
+label>.cs{margin-top:6px}
+.cs-native{position:absolute!important;inset:0;width:100%!important;height:100%!important;opacity:0;pointer-events:none;margin:0!important}
+.cs-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 11px 10px 12px;border:1px solid var(--border);border-radius:12px;background:var(--surface-2);color:var(--text);font:inherit;font-size:13px;text-align:left;cursor:pointer;min-height:40px;transition:border-color .18s,box-shadow .18s,background .18s}
+.cs-btn:hover{border-color:color-mix(in srgb,var(--primary) 38%,var(--border))}
+.cs-btn:focus-visible,.cs-btn[aria-expanded=true]{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 18%,transparent)}
+.cs-v{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cs-ch{flex:none;width:16px;height:16px;color:var(--muted);transition:transform .28s cubic-bezier(.3,1.3,.5,1),color .2s}
+.cs-btn[aria-expanded=true] .cs-ch{transform:rotate(180deg);color:var(--primary)}
+.cs-pop{position:fixed;z-index:60;overflow:auto;padding:6px;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 20px 54px rgba(8,24,18,.24),0 2px 8px rgba(8,24,18,.08);transform-origin:top center;animation:csIn .22s cubic-bezier(.2,.9,.3,1.08);overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.cs-pop.up{transform-origin:bottom center;animation-name:csInUp}
+.cs-pop.out{animation:csOut .16s ease forwards;pointer-events:none}
+.cs-o{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:42px;padding:9px 12px;border-radius:11px;font-size:14px;color:var(--text);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.cs-o>span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.cs-o.hl{background:var(--surface-2)}
+.cs-o.on{background:color-mix(in srgb,var(--primary) 12%,transparent);color:var(--primary);font-weight:650}
+.cs-o svg{width:16px;height:16px;flex:none;opacity:0;transform:scale(.6);transition:opacity .2s,transform .25s cubic-bezier(.3,1.5,.5,1)}.cs-o.on svg{opacity:1;transform:none}
+@keyframes csIn{from{opacity:0;transform:translateY(-8px) scale(.96)}}
+@keyframes csInUp{from{opacity:0;transform:translateY(8px) scale(.96)}}
+@keyframes csOut{to{opacity:0;transform:translateY(-4px) scale(.98)}}
+@media(max-width:680px){.cs-btn{font-size:14px;min-height:44px}.cs-o{min-height:46px;font-size:15px}}
+@media(prefers-reduced-motion:reduce){.cs-pop,.cs-ch,.cs-o svg{animation:none!important;transition:none!important}}
 </style></head><body>
 <aside id=sd></aside><main><header class=topbar><div class=heading><div class=eyebrow>ЛИЧНЫЙ ФИНАНСОВЫЙ КАБИНЕТ</div><h1 id=h>Главная</h1><p id=sub>Ваша финансовая картина — в одном месте.</p></div><div class=header-actions><div class=local-chip><i></i>Данные хранятся на этом устройстве</div><button id=hb class="bt pr" onclick="txf({})">＋ Добавить операцию</button></div></header><div id=c></div></main><div id=m></div><div id=ts role=status aria-live=polite></div>
 <script>
@@ -373,10 +397,10 @@ function toast(t){const e=$('#ts');e.textContent=t;e.style.display='block';clear
 // modal/forms
 let _clt=0,_mk='';
 const mkey=h=>String(h).replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim().slice(0,40),
-modal=h=>{const m=$('#m'),mb=m.querySelector('.mb'),k=mkey(h);_clt++;
-if(mb){const md=mb.querySelector('.md');mb.classList.remove('closing');md.innerHTML=h;if(k!==_mk){md.scrollTop=0;md.dataset.s=md.dataset.s=='a'?'b':'a'}_mk=k;return}
-_mk=k;m.innerHTML=`<div class=mb onclick="if(event.target==this)cl()"><div class=md>${h}</div></div>`},
-cl=()=>{const m=$('#m'),mb=m.querySelector('.mb');if(!mb||matchMedia('(prefers-reduced-motion:reduce)').matches){m.innerHTML='';return}if(mb.classList.contains('closing'))return;mb.classList.add('closing');const t=++_clt;setTimeout(()=>{if(_clt===t&&mb.classList.contains('closing'))m.innerHTML=''},240)};
+modal=h=>{const m=$('#m'),mb=m.querySelector('.mb'),k=mkey(h);_clt++;csClose(true);
+if(mb){const md=mb.querySelector('.md');mb.classList.remove('closing');md.innerHTML=h;if(k!==_mk){md.scrollTop=0;md.dataset.s=md.dataset.s=='a'?'b':'a'}_mk=k;csEnh(m);return}
+_mk=k;m.innerHTML=`<div class=mb onclick="if(event.target==this)cl()"><div class=md>${h}</div></div>`;csEnh(m)},
+cl=()=>{csClose(true);const m=$('#m'),mb=m.querySelector('.mb');if(!mb||matchMedia('(prefers-reduced-motion:reduce)').matches){m.innerHTML='';return}if(mb.classList.contains('closing'))return;mb.classList.add('closing');const t=++_clt;setTimeout(()=>{if(_clt===t&&mb.classList.contains('closing'))m.innerHTML=''},240)};
 function ask(t,fn){window._f=fn;modal(`<p>${t}</p><div class=row><button class=bt onclick="cl()">Отмена</button><button class="bt dn" onclick="cl();_f()">Подтвердить</button></div>`)}
 function form(title,ff,ok,v={}){window._ti=title;window._ff=ff;window._ok=ok;const fs=ff(v);modal(`<h3 style="margin-top:0">${title}</h3><form id=fm onsubmit="return sub(event)">${fs.map(f=>`<label>${f.l}${f.t=='select'?`<select name=${f.k}${f.re?' onchange="rf()"':''}>${opt(f.o,v[f.k])}</select>`:f.t=='textarea'?`<textarea name=${f.k}>${esc(v[f.k])}</textarea>`:`<input name=${f.k} type=${f.t||'text'} value="${esc(v[f.k])}"${f.t=='number'?' step=0.01 min=0':''}>`}</label>`).join('')}<div id=er class=er></div><div class=row><button type=button class=bt onclick="cl()">Отмена</button><button class="bt pr">Сохранить</button></div></form>`)}
 const vals=()=>Object.fromEntries(new FormData($('#fm'))),rf=()=>form(_ti,_ff,_ok,vals());
@@ -578,13 +602,33 @@ const blocked=el=>{for(let e=el;e&&e!==document.body&&e.nodeType==1;e=e.parentEl
 addEventListener('touchstart',e=>{ok=false;if(e.touches.length!=1||document.querySelector('.mb')||!matchMedia('(max-width:680px)').matches)return;const t=e.touches[0];if(t.clientX<24||t.clientX>innerWidth-24||blocked(e.target))return;x0=t.clientX;y0=t.clientY;t0=Date.now();ok=true},{passive:true});
 addEventListener('touchend',e=>{if(!ok)return;ok=false;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;if(Date.now()-t0>700||Math.abs(dx)<56||Math.abs(dx)<Math.abs(dy)*1.5)return;const i=NAV.findIndex(n=>n[0]==view),j=i+(dx<0?1:-1);if(i<0||j<0||j>=NAV.length)return;view=NAV[j][0];render()},{passive:true});
 addEventListener('touchcancel',()=>{ok=false},{passive:true})})();
+/* ===== Custom dropdowns (progressive enhancement of <select>) ===== */
+const CS={pop:null,sel:null,btn:null,hl:-1},CHK='<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 10.5l3.5 3.5 7.5-8"/></svg>',CHV='<svg class=cs-ch viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7.5l5 5 5-5"/></svg>';
+function csEnh(root){(root||document).querySelectorAll('select:not([data-cs])').forEach(sel=>{sel.dataset.cs=1;const w=document.createElement('span'),b=document.createElement('button');w.className='cs';b.type='button';b.className='cs-btn';b.setAttribute('aria-haspopup','listbox');b.setAttribute('aria-expanded','false');b.innerHTML='<span class=cs-v></span>'+CHV;
+sel.parentNode.insertBefore(w,sel);w.append(b,sel);sel.classList.add('cs-native');sel.tabIndex=-1;sel.setAttribute('aria-hidden','true');
+const sync=()=>{const o=sel.options[sel.selectedIndex];b.firstChild.textContent=o?o.text:''};sync();sel.addEventListener('change',sync);
+b.onclick=()=>CS.pop&&CS.sel===sel?csClose():csOpen(sel,b);
+b.onkeydown=e=>{if(e.key=='ArrowDown'||e.key=='ArrowUp'){e.preventDefault();csOpen(sel,b)}}})}
+function csOpen(sel,b){csClose(true);const p=document.createElement('div');p.className='cs-pop';p.setAttribute('role','listbox');
+[...sel.options].forEach((o,i)=>{const d=document.createElement('div');d.className='cs-o'+(i==sel.selectedIndex?' on':'');d.setAttribute('role','option');d.setAttribute('aria-selected',i==sel.selectedIndex);d.dataset.i=i;d.innerHTML='<span>'+esc(o.text)+'</span>'+CHK;p.append(d)});
+document.body.append(p);const r=b.getBoundingClientRect(),vh=innerHeight,W=Math.max(r.width,170),below=vh-r.bottom-14,above=r.top-14,need=Math.min(p.scrollHeight,300),up=below<Math.min(need,220)&&above>below;
+p.style.width=W+'px';p.style.left=Math.min(Math.max(8,r.left),innerWidth-W-8)+'px';p.style.maxHeight=Math.max(120,Math.min(300,up?above:below))+'px';
+if(up){p.style.bottom=(vh-r.top+6)+'px';p.classList.add('up')}else p.style.top=(r.bottom+6)+'px';
+CS.pop=p;CS.sel=sel;CS.btn=b;CS.hl=sel.selectedIndex;b.setAttribute('aria-expanded','true');const on=p.querySelector('.on');on&&on.scrollIntoView({block:'nearest'});
+p.onclick=e=>{const o=e.target.closest('.cs-o');o&&csPick(+o.dataset.i)};p.onpointermove=e=>{const o=e.target.closest('.cs-o');if(o){CS.hl=+o.dataset.i;csHl(false)}}}
+function csHl(scroll){if(!CS.pop)return;CS.pop.querySelectorAll('.cs-o').forEach((o,i)=>{o.classList.toggle('hl',i==CS.hl);if(scroll&&i==CS.hl)o.scrollIntoView({block:'nearest'})})}
+function csPick(i){const sel=CS.sel,btn=CS.btn;csClose();if(!sel||!sel.isConnected||sel.selectedIndex===i)return;sel.selectedIndex=i;sel.dispatchEvent(new Event('input',{bubbles:true}));sel.dispatchEvent(new Event('change',{bubbles:true}));btn&&btn.isConnected&&btn.focus({preventScroll:true})}
+function csClose(now){const p=CS.pop;if(!p)return;if(CS.btn)CS.btn.setAttribute('aria-expanded','false');CS.pop=CS.sel=CS.btn=null;if(now||matchMedia('(prefers-reduced-motion:reduce)').matches)p.remove();else{p.classList.add('out');setTimeout(()=>p.remove(),160)}}
+addEventListener('pointerdown',e=>{if(CS.pop&&!CS.pop.contains(e.target)&&!(CS.btn&&CS.btn.contains(e.target)))csClose()},true);
+addEventListener('keydown',e=>{if(!CS.pop)return;const n=CS.sel.options.length;if(e.key=='Escape'){e.preventDefault();e.stopPropagation();const b=CS.btn;csClose();b&&b.focus({preventScroll:true})}else if(e.key=='ArrowDown'){e.preventDefault();CS.hl=Math.min(n-1,CS.hl+1);csHl(true)}else if(e.key=='ArrowUp'){e.preventDefault();CS.hl=Math.max(0,CS.hl-1);csHl(true)}else if(e.key=='Enter'||e.key==' '){e.preventDefault();csPick(CS.hl)}else if(e.key=='Tab')csClose()},true);
+addEventListener('scroll',e=>{if(CS.pop&&!CS.pop.contains(e.target))csClose(true)},true);addEventListener('resize',()=>csClose(true));
 function pageFx(pc,sc,prevV,prevSub){const c=$('#c'),rm=matchMedia('(prefers-reduced-motion:reduce)').matches,OFF=['page-enter','sub-in','pe-r','pe-l','pe-set','pe-back'];
 c.classList.remove(...OFF);const fb=c.querySelector('.fin-body');fb&&fb.classList.remove(...OFF);if(rm||!(pc||sc))return;
 if(sc&&fb){const O=['an','tx','rec'],a=O.indexOf(prevSub),b=O.indexOf(fsub);let cls='';if(fsub=='set')cls='pe-set';else if(prevSub=='set')cls='pe-back';else if(a>=0&&b>=0&&a!==b)cls=b>a?'pe-r':'pe-l';void fb.offsetWidth;cls&&fb.classList.add(cls);fb.classList.add('sub-in');fb.addEventListener('animationend',()=>fb.classList.remove(...OFF),{once:true});return}
 if(!pc)return;void c.offsetWidth;const a=NAV.findIndex(n=>n[0]==prevV),b=NAV.findIndex(n=>n[0]==view);if(a>=0&&b>=0&&a!==b)c.classList.add(b>a?'pe-r':'pe-l');c.classList.add('page-enter');c.addEventListener('animationend',()=>c.classList.remove(...OFF),{once:true})}
 function render(){const prevV=_lastView,pageChanged=_lastView!==null&&_lastView!==view,profileSubChanged=_lastView===view&&view=='fin',prevSub=_lastSub,subChanged=!pageChanged&&view=='fin'&&_lastSub!==null&&_lastSub!==fsub;_lastView=view;_lastSub=fsub;if(pageChanged){try{window.scrollTo({top:0,left:0,behavior:'instant'})}catch(e){window.scrollTo(0,0)}}const r=document.documentElement;S.set.theme=='auto'?r.removeAttribute('data-theme'):r.dataset.theme=S.set.theme;r.dataset.palette=PALETTES.includes(S.set.palette)?S.set.palette:'emerald';try{const appBg=getComputedStyle(r).getPropertyValue('--bg').trim()||'#f2f5f3';document.querySelectorAll('meta[name=theme-color]').forEach(m=>{m.removeAttribute('media');m.content=appBg})}catch(e){}$('#sd').className=S.set.col?'col':'';
 $('#sd').innerHTML=`<div class=brand><div class=brand-mark>₽</div><div class=brand-copy>Мои финансы<small>PERSONAL FINANCE</small></div><button class="bt brand-toggle" aria-label="Свернуть меню" onclick="S.set.col=!S.set.col;save();render()">${I('menu')}</button></div><nav>${NAV.map(([k,l,i])=>`<button class="${view==k?'on':''}" aria-label="${l}" onclick="view='${k}';render()"><span class=nav-ico>${I(i)}</span><span class=nav-label>${l}</span></button>`).join('')}</nav><div class=sidebar-foot>Личный финансовый трекер<br>Версия 1.6.3 · GitHub Pages</div>`;navAnim();
-const page=NAV.find(n=>n[0]==view);$('#h').textContent=page[1];const hb=$('#hb');if(view=='fin'){hb.className='bt gear'+(fsub=='set'?' pr':'');hb.innerHTML=I('gear');hb.title='Настройки';hb.setAttribute('aria-label','Настройки');hb.onclick=()=>{if(fsub=='set'){fsub=_subBeforeSet||'an'}else{_subBeforeSet=fsub;fsub='set'}render()};hb.style.setProperty('--gs',fsub=='set'?'-110deg':'110deg');hb.classList.toggle('gear-spin',!!(subChanged&&(fsub=='set'||prevSub=='set')));hb.style.display=''}else{hb.className='bt pr';hb.innerHTML='＋ Добавить операцию';hb.title='';hb.onclick=()=>txf({});hb.style.display=(view=='home'||view=='goal')?'none':''}$('#sub').textContent=({home:greet(),fin:'Счета, операции, аналитика и настройки.',tx:'История операций, фильтры и быстрый поиск.',acc:'Все счета и движение средств между ними.',goal:'Отслеживайте прогресс и планируйте накопления.',rec:'Контролируйте регулярные списания и подписки.',an:'Изучайте динамику расходов и доходов.',set:'Настройте приложение и управляйте своими данными.'})[view];post=null;const content=$('#c');content.innerHTML=V[view]();pageFx(pageChanged,subChanged,prevV,prevSub);post&&post();cntFx();segFx()}
+const page=NAV.find(n=>n[0]==view);$('#h').textContent=page[1];const hb=$('#hb');if(view=='fin'){hb.className='bt gear'+(fsub=='set'?' pr':'');hb.innerHTML=I('gear');hb.title='Настройки';hb.setAttribute('aria-label','Настройки');hb.onclick=()=>{if(fsub=='set'){fsub=_subBeforeSet||'an'}else{_subBeforeSet=fsub;fsub='set'}render()};hb.style.setProperty('--gs',fsub=='set'?'-110deg':'110deg');hb.classList.toggle('gear-spin',!!(subChanged&&(fsub=='set'||prevSub=='set')));hb.style.display=''}else{hb.className='bt pr';hb.innerHTML='＋ Добавить операцию';hb.title='';hb.onclick=()=>txf({});hb.style.display=(view=='home'||view=='goal')?'none':''}$('#sub').textContent=({home:greet(),fin:'Счета, операции, аналитика и настройки.',tx:'История операций, фильтры и быстрый поиск.',acc:'Все счета и движение средств между ними.',goal:'Отслеживайте прогресс и планируйте накопления.',rec:'Контролируйте регулярные списания и подписки.',an:'Изучайте динамику расходов и доходов.',set:'Настройте приложение и управляйте своими данными.'})[view];post=null;const content=$('#c');content.innerHTML=V[view]();pageFx(pageChanged,subChanged,prevV,prevSub);csClose(true);post&&post();cntFx();segFx();csEnh()}
 (async()=>{S=await load();if(!S||!Array.isArray(S.tx))S=D();S.set={...D().set,...S.set};if(!PALETTES.includes(S.set.palette))S.set.palette='emerald';S.bud=S.bud||{};S.lim=S.lim||{};S.accLim=S.accLim||{};proc();save();render()})();
 if('serviceWorker' in navigator){let rl_=0;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(rl_++)return;location.reload()})}if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=13',{updateViaCache:'none'}).catch(()=>{}));
 </script></body></html>
