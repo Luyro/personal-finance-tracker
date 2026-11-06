@@ -281,6 +281,20 @@ html,body{overflow-x:clip}
 .gear.gear-spin .si{animation:gearSpin .6s cubic-bezier(.25,1.2,.4,1)}
 @keyframes gearSpin{from{transform:rotate(var(--gs,-110deg))}to{transform:none}}
 @media(prefers-reduced-motion:reduce){.fin-body.sub-in,.gear.gear-spin .si{animation:none!important}}
+
+/* ===== Modal open / swap / close animations ===== */
+.mb{animation:mbIn .26s ease backwards}
+.md{animation:mdIn .42s cubic-bezier(.2,.9,.3,1.06) backwards}
+.md[data-s=a]{animation:mdSwapA .3s cubic-bezier(.2,.8,.25,1) backwards}
+.md[data-s=b]{animation:mdSwapB .3s cubic-bezier(.2,.8,.25,1) backwards}
+.mb.closing{animation:mbOut .24s ease forwards;pointer-events:none}
+.mb.closing .md{animation:mdOut .24s cubic-bezier(.5,0,.9,.5) forwards}
+@keyframes mbIn{from{opacity:0}}@keyframes mbOut{to{opacity:0}}
+@keyframes mdIn{from{opacity:0;transform:translateY(30px) scale(.96)}}
+@keyframes mdOut{to{opacity:0;transform:translateY(24px) scale(.97)}}
+@keyframes mdSwapA{from{opacity:.0;transform:translateY(10px) scale(.985)}}
+@keyframes mdSwapB{from{opacity:.0;transform:translateY(10px) scale(.985)}}
+@media(prefers-reduced-motion:reduce){.mb,.md,.md[data-s]{animation:none!important}}
 </style></head><body>
 <aside id=sd></aside><main><header class=topbar><div class=heading><div class=eyebrow>ЛИЧНЫЙ ФИНАНСОВЫЙ КАБИНЕТ</div><h1 id=h>Главная</h1><p id=sub>Ваша финансовая картина — в одном месте.</p></div><div class=header-actions><div class=local-chip><i></i>Данные хранятся на этом устройстве</div><button id=hb class="bt pr" onclick="txf({})">＋ Добавить операцию</button></div></header><div id=c></div></main><div id=m></div><div id=ts role=status aria-live=polite></div>
 <script>
@@ -357,7 +371,12 @@ async function save(){
 }
 function toast(t){const e=$('#ts');e.textContent=t;e.style.display='block';clearTimeout(window._t2);window._t2=setTimeout(()=>e.style.display='none',3000)}
 // modal/forms
-const modal=h=>$('#m').innerHTML=`<div class=mb onclick="if(event.target==this)cl()"><div class=md>${h}</div></div>`,cl=()=>$('#m').innerHTML='';
+let _clt=0,_mk='';
+const mkey=h=>String(h).replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim().slice(0,40),
+modal=h=>{const m=$('#m'),mb=m.querySelector('.mb'),k=mkey(h);_clt++;
+if(mb){const md=mb.querySelector('.md');mb.classList.remove('closing');md.innerHTML=h;if(k!==_mk){md.scrollTop=0;md.dataset.s=md.dataset.s=='a'?'b':'a'}_mk=k;return}
+_mk=k;m.innerHTML=`<div class=mb onclick="if(event.target==this)cl()"><div class=md>${h}</div></div>`},
+cl=()=>{const m=$('#m'),mb=m.querySelector('.mb');if(!mb||matchMedia('(prefers-reduced-motion:reduce)').matches){m.innerHTML='';return}if(mb.classList.contains('closing'))return;mb.classList.add('closing');const t=++_clt;setTimeout(()=>{if(_clt===t&&mb.classList.contains('closing'))m.innerHTML=''},240)};
 function ask(t,fn){window._f=fn;modal(`<p>${t}</p><div class=row><button class=bt onclick="cl()">Отмена</button><button class="bt dn" onclick="cl();_f()">Подтвердить</button></div>`)}
 function form(title,ff,ok,v={}){window._ti=title;window._ff=ff;window._ok=ok;const fs=ff(v);modal(`<h3 style="margin-top:0">${title}</h3><form id=fm onsubmit="return sub(event)">${fs.map(f=>`<label>${f.l}${f.t=='select'?`<select name=${f.k}${f.re?' onchange="rf()"':''}>${opt(f.o,v[f.k])}</select>`:f.t=='textarea'?`<textarea name=${f.k}>${esc(v[f.k])}</textarea>`:`<input name=${f.k} type=${f.t||'text'} value="${esc(v[f.k])}"${f.t=='number'?' step=0.01 min=0':''}>`}</label>`).join('')}<div id=er class=er></div><div class=row><button type=button class=bt onclick="cl()">Отмена</button><button class="bt pr">Сохранить</button></div></form>`)}
 const vals=()=>Object.fromEntries(new FormData($('#fm'))),rf=()=>form(_ti,_ff,_ok,vals());
